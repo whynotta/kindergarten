@@ -12,11 +12,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupCategoryDto {
-    @NotBlank(message = "Название категории обязательно!")
+    Long id;
     String name;
-    @NotNull(message = "Статус активности обязателен!")
     boolean active;
-    @NotNull(message = "Цена обязательна!")
-    @Positive(message = "Цена должна быть больше нуля!")
     double price;
 }
