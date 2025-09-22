@@ -69,7 +69,6 @@ public class GroupCategoryServiceImpl implements GroupCategoryService {
         GroupCategoryDto groupCategoryDto = groupCategoryMapper.groupCategoryToGroupCategoryDto(groupCategory);
         return ResponseEntity.ok(groupCategoryDto);
     }
-
     @Override
     public ResponseEntity<?> findAllCategoryGroup(int pageNo, int pageSize) {
         if (pageNo < 0 && pageSize <= 0){
