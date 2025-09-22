@@ -20,7 +20,7 @@ public class GroupCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     String name;
     @Column(nullable = false)
     boolean active;

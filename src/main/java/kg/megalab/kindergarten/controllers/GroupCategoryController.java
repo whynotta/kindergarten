@@ -1,10 +1,12 @@
 package kg.megalab.kindergarten.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.megalab.kindergarten.models.dto.GroupCategoryCreateDto;
 import kg.megalab.kindergarten.models.dto.GroupCategoryDto;
 import kg.megalab.kindergarten.services.GroupCategoryService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,35 +23,39 @@ public class GroupCategoryController implements CRUDController<GroupCategoryCrea
     @PostMapping("")
     @Operation(summary = "Создание категории групп")
     @Override
+    @ApiResponse(responseCode = "201")
     public ResponseEntity<GroupCategoryDto> create(GroupCategoryCreateDto groupCategoryCreateDto) {
-        return null;
+        return groupCategoryService.createGroupCategory(groupCategoryCreateDto);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Обновление категории групп")
     @Override
     public ResponseEntity<GroupCategoryDto> update(GroupCategoryDto groupCategoryDto, Long id) {
-        return null;
+        return groupCategoryService.updateGroupCategory(groupCategoryDto,id);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление категории групп")
     @Override
     public ResponseEntity<GroupCategoryDto> delete(Long id) {
-        return null;
+
+        return groupCategoryService.deleteGroupCategory(id);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Поиск категории групп по айди")
     @Override
     public ResponseEntity<GroupCategoryDto> findById(Long id) {
-        return null;
+
+        return groupCategoryService.findCategoryGroupById(id);
     }
 
     @GetMapping("")
     @Operation(summary = "Вывод всех категорий групп")
     @Override
     public ResponseEntity<?> findAll(int pageNo, int pageSize) {
-        return null;
+
+        return groupCategoryService.findAllCategoryGroup(pageNo,pageSize);
     }
 }
