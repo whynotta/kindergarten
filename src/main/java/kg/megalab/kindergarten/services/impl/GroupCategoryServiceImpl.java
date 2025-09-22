@@ -72,7 +72,7 @@ public class GroupCategoryServiceImpl implements GroupCategoryService {
 
     @Override
     public ResponseEntity<?> findAllCategoryGroup(int pageNo, int pageSize) {
-        if (pageNo < 0 && pageSize < 0){
+        if (pageNo < 0 && pageSize <= 0){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").ascending());
