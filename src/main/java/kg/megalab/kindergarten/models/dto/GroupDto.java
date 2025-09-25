@@ -1,6 +1,7 @@
 package kg.megalab.kindergarten.models.dto;
 
-import kg.megalab.kindergarten.models.enums.TeacherDegree;
+import kg.megalab.kindergarten.models.GroupCategory;
+import kg.megalab.kindergarten.models.Teacher;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,12 +12,12 @@ import lombok.experimental.FieldDefaults;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TeacherDto {
+public class GroupDto {
     Long id;
-    String firstName;
-    String lastName;
-    String patronymic;
-    TeacherDegree teacherDegree;
-    Boolean active;
-
+    String name;
+    int maxChildrenCount;
+    double price;
+    Teacher nanny;
+    GroupCategory groupCategory;
+    Teacher teacher;
 }
