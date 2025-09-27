@@ -1,0 +1,7 @@
+package kg.megalab.kindergarten.exception;
+
+public class LogicException extends RuntimeException {
+    public LogicException(String message) {
+        super(message);
+    }
+}

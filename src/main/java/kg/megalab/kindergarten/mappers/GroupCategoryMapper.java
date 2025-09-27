@@ -19,7 +19,7 @@ public interface GroupCategoryMapper {
     GroupCategoryDto groupCategoryToGroupCategoryDto(GroupCategory groupCategory);
 
     @Mapping(target = "id", ignore = true)
-    void updateGroudCategoryFromDto(GroupCategoryDto groupCategoryDto,@MappingTarget GroupCategory groupCategory);
+    void updateGroupCategoryFromDto(GroupCategoryDto groupCategoryDto,@MappingTarget GroupCategory groupCategory);
 
     List<GroupCategoryDto> groupCategorysToGroupCategoryDtos(List<GroupCategory> groupCategories);
 }

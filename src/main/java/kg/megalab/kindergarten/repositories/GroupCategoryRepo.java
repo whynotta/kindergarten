@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GroupCategoryRepo extends JpaRepository<GroupCategory,Long> {
-    boolean existsByName(@NotBlank(message = "Название категории обязательно!") String name);
+    boolean existsByNameIgnoreCase(@NotBlank(message = "Название категории обязательно!") String name);
 }

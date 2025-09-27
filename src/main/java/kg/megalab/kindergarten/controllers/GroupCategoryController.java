@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.megalab.kindergarten.models.dto.GroupCategoryCreateDto;
 import kg.megalab.kindergarten.models.dto.GroupCategoryDto;
+import kg.megalab.kindergarten.response.GlobalResponse;
 import kg.megalab.kindergarten.services.GroupCategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,22 +24,21 @@ public class GroupCategoryController implements CRUDController<GroupCategoryCrea
     @PostMapping("")
     @Operation(summary = "Создание категории групп")
     @Override
-    @ApiResponse(responseCode = "201")
-    public ResponseEntity<GroupCategoryDto> create(GroupCategoryCreateDto groupCategoryCreateDto) {
+    public ResponseEntity<GlobalResponse> create(GroupCategoryCreateDto groupCategoryCreateDto) {
         return groupCategoryService.createGroupCategory(groupCategoryCreateDto);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Обновление категории групп")
     @Override
-    public ResponseEntity<GroupCategoryDto> update(GroupCategoryDto groupCategoryDto, Long id) {
+    public ResponseEntity<GlobalResponse> update(GroupCategoryDto groupCategoryDto, Long id) {
         return groupCategoryService.updateGroupCategory(groupCategoryDto,id);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление категории групп")
     @Override
-    public ResponseEntity<GroupCategoryDto> delete(Long id) {
+    public ResponseEntity<GlobalResponse> delete(Long id) {
 
         return groupCategoryService.deleteGroupCategory(id);
     }
@@ -46,7 +46,7 @@ public class GroupCategoryController implements CRUDController<GroupCategoryCrea
     @GetMapping("/{id}")
     @Operation(summary = "Поиск категории групп по айди")
     @Override
-    public ResponseEntity<GroupCategoryDto> findById(Long id) {
+    public ResponseEntity<GlobalResponse> findById(Long id) {
 
         return groupCategoryService.findCategoryGroupById(id);
     }
@@ -54,7 +54,7 @@ public class GroupCategoryController implements CRUDController<GroupCategoryCrea
     @GetMapping("")
     @Operation(summary = "Вывод всех категорий групп")
     @Override
-    public ResponseEntity<?> findAll(int pageNo, int pageSize) {
+    public ResponseEntity<GlobalResponse> findAll(int pageNo, int pageSize) {
 
         return groupCategoryService.findAllCategoryGroup(pageNo,pageSize);
     }

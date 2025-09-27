@@ -1,10 +1,14 @@
 package kg.megalab.kindergarten.services.impl;
 
+import kg.megalab.kindergarten.exception.ConflictException;
+import kg.megalab.kindergarten.exception.LogicException;
+import kg.megalab.kindergarten.exception.NotFoundException;
 import kg.megalab.kindergarten.mappers.TeacherMapper;
 import kg.megalab.kindergarten.models.Teacher;
 import kg.megalab.kindergarten.models.dto.TeacherCreateDto;
 import kg.megalab.kindergarten.models.dto.TeacherDto;
 import kg.megalab.kindergarten.repositories.TeacherRepo;
+import kg.megalab.kindergarten.response.GlobalResponse;
 import kg.megalab.kindergarten.services.TeacherService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,57 +30,75 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public ResponseEntity<TeacherDto> createTeacher(TeacherCreateDto teacherCreateDto) {
-        if(teacherRepo.existsByFirstNameIgnoreCase(teacherCreateDto.getFirstName())){
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+    public ResponseEntity<GlobalResponse> createTeacher(TeacherCreateDto teacherCreateDto) {
+        if (teacherRepo.existsByFirstNameAndLastNameAndPatronymicIgnoreCase(
+                teacherCreateDto.getFirstName(),
+                teacherCreateDto.getLastName(),
+                teacherCreateDto.getPatronymic())){
+            throw new ConflictException("Учитель с таким ФИО уже существует");
         }
+
         Teacher teacher = teacherMapper.teacherCreateDtoToTeacher(teacherCreateDto);
-        teacherRepo.save(teacher);
-        TeacherDto teacherDto = teacherMapper.teacherToTeacherDto(teacher);
-        return new ResponseEntity<>(teacherDto, HttpStatus.CREATED);
-    }
+        Teacher savedTeacher = teacherRepo.save(teacher);
+        TeacherDto teacherDto = teacherMapper.teacherToTeacherDto(savedTeacher);
 
+        GlobalResponse response = GlobalResponse.created(teacherDto);
+        return ResponseEntity.status(201).body(response);
+    }
     @Override
-    public ResponseEntity<TeacherDto> updateTeacher(TeacherDto teacherDto, Long id) {
-        if(teacherRepo.findById(id).isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<GlobalResponse> updateTeacher(TeacherDto teacherDto, Long id) {
+        Teacher teacher = teacherRepo.findById(id).orElseThrow(() ->
+                        new NotFoundException("Учитель c id - " + id +" не найден"));
+        if (teacherRepo.existsByFirstNameAndLastNameAndPatronymicIgnoreCase(
+                teacherDto.getFirstName(),
+                teacherDto.getLastName(),
+                teacherDto.getPatronymic())){
+            throw new ConflictException("Учитель с таким ФИО уже существует");
         }
-        Teacher teacher = teacherRepo.findById(id).get();
+
         teacherMapper.updateTeacherFromDto(teacherDto, teacher);
-        teacherRepo.save(teacher);
-        TeacherDto updatedTeacherDto = teacherMapper.teacherToTeacherDto(teacher);
-        return ResponseEntity.ok(updatedTeacherDto);
+        Teacher updatedTeacher = teacherRepo.save(teacher);
+        TeacherDto updatedTeacherDto = teacherMapper.teacherToTeacherDto(updatedTeacher);
+
+        GlobalResponse response = GlobalResponse.success(updatedTeacherDto);
+        return ResponseEntity.status(200).body(response);
+
     }
 
     @Override
-    public ResponseEntity<TeacherDto> deleteTeacher(Long id) {
-        if(teacherRepo.findById(id).isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<GlobalResponse> deleteTeacher(Long id) {
+        Teacher teacher = teacherRepo.findById(id).orElseThrow(() ->
+                new NotFoundException("Учитель с id - "+ id + " не найден!"));
+        if (!teacher.getTeacherGroups().isEmpty() || !teacher.getNannyGroups().isEmpty()){
+            throw new LogicException("Нельзя удалить учителя с активными группами!");
         }
-        Teacher teacher = teacherRepo.findById(id).get();
         teacherRepo.delete(teacher);
-        return ResponseEntity.ok(teacherMapper.teacherToTeacherDto(teacher));
-    }
 
+        GlobalResponse response = GlobalResponse.success("Учитель с id - "+ id + " успешно удален");
+        return ResponseEntity.status(200).body(response);
+    }
     @Override
-    public ResponseEntity<TeacherDto> findById(Long id) {
-        if (teacherRepo.findById(id).isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        Teacher teacher = teacherRepo.findById(id).get();
+    public ResponseEntity<GlobalResponse> findById(Long id) {
+        Teacher teacher = teacherRepo.findById(id).orElseThrow(() ->
+                new NotFoundException("Учитель с id - "+ id + ("не найден")));
+
         TeacherDto teacherDto = teacherMapper.teacherToTeacherDto(teacher);
-        return ResponseEntity.ok(teacherDto);
+
+        GlobalResponse response = GlobalResponse.success(teacherDto);
+        return ResponseEntity.status(200).body(response);
     }
 
     @Override
-    public ResponseEntity<?> findAllTeacher(int pageNo, int pageSize) {
+    public ResponseEntity<GlobalResponse> findAllTeacher(int pageNo, int pageSize) {
         if(pageNo < 0 || pageSize <= 0){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new LogicException("Ошибка параметром пагинации!");
         }
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("teacherDegree").ascending());
         List<Teacher> teachers = teacherRepo.findAll(pageable).getContent();
         List<TeacherDto> teacherDtos = teacherMapper.teachersToTeacherDtos(teachers);
-        return ResponseEntity.ok(teacherDtos);
+
+        GlobalResponse response = GlobalResponse.success(teacherDtos);
+        return ResponseEntity.status(200).body(response);
     }
 
 }
