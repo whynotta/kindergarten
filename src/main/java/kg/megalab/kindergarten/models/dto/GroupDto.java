@@ -1,5 +1,6 @@
 package kg.megalab.kindergarten.models.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import kg.megalab.kindergarten.models.GroupCategory;
 import kg.megalab.kindergarten.models.Teacher;
 import lombok.AccessLevel;
@@ -17,7 +18,10 @@ public class GroupDto {
     String name;
     int maxChildrenCount;
     double price;
+    @JsonIgnore
     Teacher nanny;
+    @JsonIgnore
     GroupCategory groupCategory;
+    @JsonIgnore
     Teacher teacher;
 }

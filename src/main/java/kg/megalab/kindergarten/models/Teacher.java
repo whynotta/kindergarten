@@ -1,5 +1,7 @@
 package kg.megalab.kindergarten.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import kg.megalab.kindergarten.models.enums.TeacherDegree;
 import lombok.AccessLevel;
@@ -28,12 +30,13 @@ public class Teacher {
     String patronymic;
     @Column(nullable = false)
     boolean active;
-    @Enumerated(EnumType.STRING)
     @Column(name = "teacher_degree", nullable = false)
     TeacherDegree teacherDegree;
+    @JsonBackReference
     @OneToMany(mappedBy = "teacher")
     List<Group> teacherGroups = new ArrayList<>();
     @OneToMany(mappedBy = "nanny")
+    @JsonBackReference
     List<Group> nannyGroups = new ArrayList<>();
 
 

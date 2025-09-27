@@ -1,5 +1,7 @@
 package kg.megalab.kindergarten.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,13 +28,15 @@ public class Group {
     int maxChildrenCount;
     double price;
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "nanny_id")
     Teacher nanny;
     @ManyToOne
-    @JoinColumn(name = "group_category_id",nullable = false)
+    @JoinColumn(name = "group_category_id")
     GroupCategory groupCategory;
     @ManyToOne
-    @JoinColumn(name = "teacher_id",nullable = false)
+    @JsonManagedReference
+    @JoinColumn(name = "teacher_id")
     Teacher teacher;
     @OneToMany(mappedBy = "group")
     List<GroupChildren> groupChildren = new ArrayList<>();
