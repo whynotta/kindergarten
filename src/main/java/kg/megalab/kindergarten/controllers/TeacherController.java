@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.megalab.kindergarten.models.dto.TeacherCreateDto;
 import kg.megalab.kindergarten.models.dto.TeacherDto;
+import kg.megalab.kindergarten.response.GlobalResponse;
 import kg.megalab.kindergarten.services.TeacherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,34 +24,34 @@ public class TeacherController implements CRUDController<TeacherCreateDto, Teach
     @Operation(summary = "Создание сущности учителя")
     @Override
     @ApiResponse(responseCode = "201")
-    public ResponseEntity<TeacherDto> create(TeacherCreateDto teacherCreateDto) {
+    public ResponseEntity<GlobalResponse> create(TeacherCreateDto teacherCreateDto) {
         return teacherService.createTeacher(teacherCreateDto);
     }
     @PutMapping("/{id}")
     @Operation(summary = "Обновление сущности учителя")
     @Override
-    public ResponseEntity<TeacherDto> update(TeacherDto teacherDto, Long id) {
+    public ResponseEntity<GlobalResponse> update(TeacherDto teacherDto, Long id) {
         return teacherService.updateTeacher(teacherDto,id);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление сущности учителя")
     @Override
-    public ResponseEntity<TeacherDto> delete(Long id) {
+    public ResponseEntity<GlobalResponse> delete(Long id) {
         return teacherService.deleteTeacher(id);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Поиск учителя по айди")
     @Override
-    public ResponseEntity<TeacherDto> findById(Long id) {
+    public ResponseEntity<GlobalResponse> findById(Long id) {
         return teacherService.findById(id);
     }
 
     @GetMapping()
     @Operation(summary = "Вывод всех учителей с пагинацией")
     @Override
-    public ResponseEntity<?> findAll(int pageNo, int pageSize) {
+    public ResponseEntity<GlobalResponse> findAll(int pageNo, int pageSize) {
         return teacherService.findAllTeacher(pageNo,pageSize);
     }
 }
