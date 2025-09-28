@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/group")
-@Tag(name = "Category Controller", description = "Управление группами")
+@Tag(name = "Group Controller", description = "Управление группами")
 public class GroupController implements CRUDController<GroupCreateDto, GroupDto>{
     private final GroupService groupService;
 
