@@ -18,10 +18,7 @@ public class GroupDto {
     String name;
     int maxChildrenCount;
     double price;
-    @JsonIgnore
     Teacher nanny;
-    @JsonIgnore
     GroupCategory groupCategory;
-    @JsonIgnore
     Teacher teacher;
 }

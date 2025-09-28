@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.megalab.kindergarten.models.dto.GroupCreateDto;
 import kg.megalab.kindergarten.models.dto.GroupDto;
+import kg.megalab.kindergarten.response.GlobalResponse;
 import kg.megalab.kindergarten.services.GroupService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,35 +22,38 @@ public class GroupController implements CRUDController<GroupCreateDto, GroupDto>
     @PostMapping()
     @Operation(summary = "Cоздание группы")
     @Override
-    public ResponseEntity<GroupDto> create(GroupCreateDto groupCreateDto) {
+    public ResponseEntity<GlobalResponse> create(GroupCreateDto groupCreateDto) {
         return groupService.createGroup(groupCreateDto);
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "Обновление группы")
     @Override
-    public ResponseEntity<GroupDto> update(GroupDto groupDto, Long id) {
-        return null;
+    public ResponseEntity<GlobalResponse> update(GroupDto groupDto, Long id) {
+        return groupService.updateGroup(groupDto,id);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление группы")
     @Override
-    public ResponseEntity<GroupDto> delete(Long id) {
-        return null;
+    public ResponseEntity<GlobalResponse> delete(Long id) {
+
+        return groupService.deleteGroup(id);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Поиск группы по айди")
     @Override
-    public ResponseEntity<GroupDto> findById(Long id) {
-        return null;
+    public ResponseEntity<GlobalResponse> findById(Long id) {
+
+        return groupService.findGroupById(id);
     }
 
     @GetMapping()
     @Operation(summary = "Вывод всех групп с пагинацией")
     @Override
-    public ResponseEntity<?> findAll(int pageNo, int pageSize) {
-        return null;
+    public ResponseEntity<GlobalResponse> findAll(int pageNo, int pageSize) {
+
+        return groupService.findAllGroups(pageNo,pageSize);
     }
 }

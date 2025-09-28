@@ -9,4 +9,6 @@ public interface TeacherRepo extends JpaRepository<Teacher,Long> {
     boolean existsByFirstNameIgnoreCase(String firstName);
 
     boolean existsByFirstNameAndLastNameAndPatronymicIgnoreCase(String firstName, String lastName, String patronymic);
+
+    Long id(Long id);
 }

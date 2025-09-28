@@ -1,5 +1,6 @@
 package kg.megalab.kindergarten.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,7 @@ public class GroupCategory {
     boolean active;
     @Column(nullable = false,name = "price")
     double price;
+    @JsonIgnore
     @OneToMany(mappedBy = "groupCategory")
     List<Group> groups = new ArrayList<>();
 }

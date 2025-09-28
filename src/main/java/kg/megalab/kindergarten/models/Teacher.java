@@ -31,6 +31,7 @@ public class Teacher {
     @Column(nullable = false)
     boolean active;
     @Column(name = "teacher_degree", nullable = false)
+    @Enumerated(EnumType.ORDINAL)
     TeacherDegree teacherDegree;
     @JsonBackReference
     @OneToMany(mappedBy = "teacher")

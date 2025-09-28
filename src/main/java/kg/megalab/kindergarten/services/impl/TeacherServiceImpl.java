@@ -80,7 +80,7 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public ResponseEntity<GlobalResponse> findById(Long id) {
         Teacher teacher = teacherRepo.findById(id).orElseThrow(() ->
-                new NotFoundException("Учитель с id - "+ id + ("не найден")));
+                new NotFoundException("Учитель с id - "+ id + " не найден"));
 
         TeacherDto teacherDto = teacherMapper.teacherToTeacherDto(teacher);
 

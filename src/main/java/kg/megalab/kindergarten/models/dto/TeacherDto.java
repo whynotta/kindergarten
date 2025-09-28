@@ -18,5 +18,4 @@ public class TeacherDto {
     String patronymic;
     TeacherDegree teacherDegree;
     Boolean active;
-
 }
