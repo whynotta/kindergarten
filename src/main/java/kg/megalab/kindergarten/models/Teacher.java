@@ -33,11 +33,11 @@ public class Teacher {
     @Column(name = "teacher_degree", nullable = false)
     @Enumerated(EnumType.ORDINAL)
     TeacherDegree teacherDegree;
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(mappedBy = "teacher")
     List<Group> teacherGroups = new ArrayList<>();
     @OneToMany(mappedBy = "nanny")
-    @JsonBackReference
+    @JsonIgnore
     List<Group> nannyGroups = new ArrayList<>();
 
 

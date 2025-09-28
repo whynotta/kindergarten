@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GroupRepo extends JpaRepository<Group, Long> {
     boolean existsByNameIgnoreCase(@NotBlank(message = "Имя обязательно!") String name);
+
+    boolean existsByNameIgnoreCaseAndIdNot(String name, Long id);
 }

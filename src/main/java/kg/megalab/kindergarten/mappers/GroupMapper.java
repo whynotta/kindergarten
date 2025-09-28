@@ -12,12 +12,15 @@ import java.util.List;
 public interface GroupMapper {
     GroupMapper INSTANCE = Mappers.getMapper(GroupMapper.class);
 
+    @Mapping(source = "groupCategoryId", target = "groupCategory.id")
+    @Mapping(source = "teacherId", target = "teacher.id")
+    @Mapping(source = "nannyId", target = "nanny.id")
     Group groupCreateDtoToGroup(GroupCreateDto groupCreateDto);
 
+    @Mapping(source = "groupCategory.id", target = "groupCategoryId")
+    @Mapping(source = "teacher.id", target = "teacherId")
+    @Mapping(source = "nanny.id", target = "nannyId")
     GroupDto groupToGroupDto(Group group);
-
-    @Mapping(target = "id", ignore = true)
-    void updateGroupFromGroupDto(GroupDto groupDto,@MappingTarget Group group);
 
     List<GroupDto> groupsToGroupDtos(List<Group> groups);
 }

@@ -16,9 +16,9 @@ import lombok.experimental.FieldDefaults;
 public class GroupDto {
     Long id;
     String name;
-    int maxChildrenCount;
-    double price;
-    Teacher nanny;
-    GroupCategory groupCategory;
-    Teacher teacher;
+    Integer maxChildrenCount;
+    Double price;
+    Long nannyId;
+    Long groupCategoryId;
+    Long teacherId;
 }

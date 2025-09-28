@@ -28,17 +28,17 @@ public class Group {
     int maxChildrenCount;
     double price;
     @ManyToOne
-    @JsonManagedReference
     @JoinColumn(name = "nanny_id")
     Teacher nanny;
     @ManyToOne
     @JoinColumn(name = "group_category_id")
     GroupCategory groupCategory;
     @ManyToOne
-    @JsonManagedReference
     @JoinColumn(name = "teacher_id")
     Teacher teacher;
+
     @OneToMany(mappedBy = "group")
+    @JsonIgnore
     List<GroupChildren> groupChildren = new ArrayList<>();
 
 }

@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import javax.swing.*;
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @AllArgsConstructor
@@ -18,10 +20,10 @@ public class GroupCreateDto {
     String name;
     @NotNull(message = "Количество обязательно!")
     @Positive(message = "Количество не может быть меньше нуля!")
-    int maxChildrenCount;
+    Integer maxChildrenCount;
     @Positive(message = "Цена не может быть меньше нуля!")
     @NotNull(message = "Цена обязательна!")
-    double price;
+    Double price;
     @NotNull(message = "Няня обязательнна!")
     Long nannyId;
     @NotNull(message = "Категория групп обязательна!")
