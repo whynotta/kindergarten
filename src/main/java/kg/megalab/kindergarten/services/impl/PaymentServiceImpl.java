@@ -62,7 +62,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public ResponseEntity<GlobalResponse> getPreviousMonth (Long childId) {
+    public ResponseEntity<GlobalResponse> getPreviousMonth(Long childId) {
         Child child = childRepo.findById(childId).orElseThrow(() ->
                 new NotFoundException("Ребенок с айди -" + childId + "не найден!"));
 
