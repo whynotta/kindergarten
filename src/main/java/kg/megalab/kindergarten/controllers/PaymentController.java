@@ -28,7 +28,7 @@ public class PaymentController {
     @GetMapping("/previos-month/{childId}")
     @Operation(description = "Получение задолженности за прошлый месяц")
     public ResponseEntity<GlobalResponse> getPreviousMonth (@PathVariable Long childId) {
-        return paymentService.getPreviousMont(childId);
+        return paymentService.getPreviousMonth(childId);
     }
 
 }
