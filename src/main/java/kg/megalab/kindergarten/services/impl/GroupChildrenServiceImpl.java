@@ -54,7 +54,7 @@ public class GroupChildrenServiceImpl implements GroupChildrenService {
         GroupChildren enrollment = new GroupChildren();
         enrollment.setChild(child);
         enrollment.setGroup(group);
-        enrollment.setStartDate(LocalDate.now());
+        enrollment.setStartDate(LocalDate.now().minusMonths(1));
         enrollment.setPrice(enrollChildDto.getPrice() != null? enrollChildDto.getPrice(): group.getPrice());
 
         GroupChildren savedEnrollment = groupChildrenRepo.save(enrollment);
