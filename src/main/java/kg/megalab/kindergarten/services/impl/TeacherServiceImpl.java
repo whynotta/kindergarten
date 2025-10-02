@@ -5,11 +5,13 @@ import kg.megalab.kindergarten.exception.LogicException;
 import kg.megalab.kindergarten.exception.NotFoundException;
 import kg.megalab.kindergarten.mappers.TeacherMapper;
 import kg.megalab.kindergarten.models.Teacher;
+import kg.megalab.kindergarten.models.dto.PagedResponse;
 import kg.megalab.kindergarten.models.dto.TeacherCreateDto;
 import kg.megalab.kindergarten.models.dto.TeacherDto;
 import kg.megalab.kindergarten.repositories.TeacherRepo;
 import kg.megalab.kindergarten.response.GlobalResponse;
 import kg.megalab.kindergarten.services.TeacherService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -49,10 +51,11 @@ public class TeacherServiceImpl implements TeacherService {
     public ResponseEntity<GlobalResponse> updateTeacher(TeacherDto teacherDto, Long id) {
         Teacher teacher = teacherRepo.findById(id).orElseThrow(() ->
                         new NotFoundException("Учитель c id - " + id +" не найден"));
-        if (teacherRepo.existsByFirstNameAndLastNameAndPatronymicIgnoreCase(
+        if (teacherRepo.existsByFirstNameAndLastNameAndPatronymicIgnoreCaseAndIdNot(
                 teacherDto.getFirstName(),
                 teacherDto.getLastName(),
-                teacherDto.getPatronymic())){
+                teacherDto.getPatronymic(),
+                id)){
             throw new ConflictException("Учитель с таким ФИО уже существует");
         }
 
@@ -93,11 +96,19 @@ public class TeacherServiceImpl implements TeacherService {
         if(pageNo < 0 || pageSize <= 0){
             throw new LogicException("Ошибка параметром пагинации!");
         }
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("teacherDegree").ascending());
-        List<Teacher> teachers = teacherRepo.findAll(pageable).getContent();
-        List<TeacherDto> teacherDtos = teacherMapper.teachersToTeacherDtos(teachers);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("teacherDegree").ascending()
+                .and(Sort.by("lastName").ascending())
+                .and(Sort.by("firstName").ascending()));
+        Page<Teacher> teachers = teacherRepo.findAll(pageable);
+        List<TeacherDto> teacherDtos = teacherMapper.teachersToTeacherDtos(teachers.getContent());
 
-        GlobalResponse response = GlobalResponse.success(teacherDtos);
+        PagedResponse<TeacherDto> pagedResponse = new PagedResponse<>(
+                teacherDtos,
+                teachers.getTotalElements(),
+                teachers.getTotalPages()
+        );
+
+        GlobalResponse response = GlobalResponse.success(pagedResponse);
         return ResponseEntity.status(200).body(response);
     }
 

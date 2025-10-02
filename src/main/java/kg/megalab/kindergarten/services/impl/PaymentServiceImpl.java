@@ -1,5 +1,6 @@
 package kg.megalab.kindergarten.services.impl;
 
+import jakarta.transaction.Transactional;
 import kg.megalab.kindergarten.exception.ConflictException;
 import kg.megalab.kindergarten.exception.LogicException;
 import kg.megalab.kindergarten.exception.NotFoundException;
@@ -39,6 +40,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<GlobalResponse> createPayment(PaymentCreateDto paymentCreateDto) {
         GroupChildren groupChildren = groupChildrenRepo.findById(paymentCreateDto.getGroupChildrenId()).orElseThrow(() ->
                 new NotFoundException("запись о ребенке в группе не найдена"));
@@ -71,32 +73,19 @@ public class PaymentServiceImpl implements PaymentService {
         LocalDate lastDayOfPreviousMonth = today.minusMonths(1).withDayOfMonth(today.
                 minusMonths(1).lengthOfMonth());
 
-        GroupChildren activeEnrollment = groupChildrenRepo.findActiveEnrollmentByChildId(childId);
-         if (activeEnrollment == null)
-             throw new NotFoundException("У ребенка нет активной группы");
-
-         boolean enrollmentStartedBeforeEnd = activeEnrollment.getStartDate().
-                 isBefore(lastDayOfPreviousMonth.plusDays(1));
-
-         boolean enrollmentNotEnderBeforeStart;
-         if(activeEnrollment.getEndDate() == null) {
-             enrollmentNotEnderBeforeStart = true;
-         }else {
-             enrollmentNotEnderBeforeStart = activeEnrollment.getEndDate().
-                     isAfter(firstDayOfPreviousMonth.minusDays(1));
-         }
-         boolean isActivePrevMonth = enrollmentStartedBeforeEnd && enrollmentNotEnderBeforeStart;
-         if(!isActivePrevMonth)
+        GroupChildren enrollment = groupChildrenRepo.findByChildIdAndPeriodOverlap(childId,
+                firstDayOfPreviousMonth,lastDayOfPreviousMonth);
+         if (enrollment == null)
              throw new NotFoundException("Ребенок не был зачислен в группу в прошлом месяце");
 
          Integer monthlyPrice;
-         if(activeEnrollment.getPrice() != null) {
-             monthlyPrice = activeEnrollment.getPrice();
+         if(enrollment.getPrice() != null) {
+             monthlyPrice = enrollment.getPrice();
          }else {
-             monthlyPrice = activeEnrollment.getGroup().getPrice();
+             monthlyPrice = enrollment.getGroup().getPrice();
          }
          Integer totalPayment = paymentRepo.sumPaymentsByGroupChildrenAndPeriod(
-                 activeEnrollment.getId(), firstDayOfPreviousMonth, lastDayOfPreviousMonth);
+                 enrollment.getId(), firstDayOfPreviousMonth, lastDayOfPreviousMonth);
          if (totalPayment == null) {
              totalPayment = 0;
          }

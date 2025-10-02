@@ -12,7 +12,7 @@ public interface GroupCategoryService {
 
     ResponseEntity<GlobalResponse> deleteGroupCategory(Long id);
 
-    ResponseEntity<GlobalResponse> findCategoryGroupById(Long id);
+    ResponseEntity<GlobalResponse> findGroupCategoryById(Long id);
 
     ResponseEntity<GlobalResponse> findAllCategoryGroup(int pageNo, int pageSize);
 }

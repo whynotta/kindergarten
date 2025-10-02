@@ -48,7 +48,7 @@ public class GroupCategoryController implements CRUDController<GroupCategoryCrea
     @Override
     public ResponseEntity<GlobalResponse> findById(Long id) {
 
-        return groupCategoryService.findCategoryGroupById(id);
+        return groupCategoryService.findGroupCategoryById(id);
     }
 
     @GetMapping("")

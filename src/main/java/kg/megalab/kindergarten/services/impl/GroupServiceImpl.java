@@ -9,11 +9,13 @@ import kg.megalab.kindergarten.models.GroupCategory;
 import kg.megalab.kindergarten.models.Teacher;
 import kg.megalab.kindergarten.models.dto.GroupCreateDto;
 import kg.megalab.kindergarten.models.dto.GroupDto;
+import kg.megalab.kindergarten.models.dto.PagedResponse;
 import kg.megalab.kindergarten.repositories.GroupCategoryRepo;
 import kg.megalab.kindergarten.repositories.GroupRepo;
 import kg.megalab.kindergarten.repositories.TeacherRepo;
 import kg.megalab.kindergarten.response.GlobalResponse;
 import kg.megalab.kindergarten.services.GroupService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -72,6 +74,8 @@ public class GroupServiceImpl implements GroupService {
         }
 
         Group group = groupMapper.groupCreateDtoToGroup(groupCreateDto);
+        if(group.getPrice() == null)
+            group.setPrice(groupCategory.getPrice());
         group.setGroupCategory(groupCategory);
         group.setTeacher(teacher);
         group.setNanny(nanny);
@@ -148,11 +152,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public ResponseEntity<GlobalResponse> deleteGroup(Long id) {
         Group group = groupRepo.findById(id).orElseThrow(() ->
-                new NotFoundException("Группа с id - " + id + "не найдена!"));
+                new NotFoundException("Группа с id - " + id + " не найдена!"));
 
         groupRepo.delete(group);
 
-        GlobalResponse response = GlobalResponse.success("Группа с id - " + id + "Удалена");
+        GlobalResponse response = GlobalResponse.success(group);
         return ResponseEntity.status(200).body(response);
     }
 
@@ -172,11 +176,17 @@ public class GroupServiceImpl implements GroupService {
             throw new LogicException("Ошибка параметром пагинации!");
         }
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").ascending());
-        List<Group> groups = groupRepo.findAll(pageable).getContent();
-        List<GroupDto> groupDtos = groupMapper.groupsToGroupDtos(groups);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("groupCategory.name").ascending());
+        Page<Group> groupsPage = groupRepo.findAllByOrderByGroupCategoryName(pageable);
+        List<GroupDto> groupDtos = groupMapper.groupsToGroupDtos(groupsPage.getContent());
 
-        GlobalResponse response = GlobalResponse.success(groupDtos);
+        PagedResponse<GroupDto> pagedResponse = new PagedResponse<>(
+                groupDtos,
+                groupsPage.getTotalElements(),
+                groupsPage.getTotalPages()
+        );
+
+        GlobalResponse response = GlobalResponse.success(pagedResponse);
         return ResponseEntity.status(200).body(response);
     }
 

@@ -1,5 +1,6 @@
 package kg.megalab.kindergarten.repositories;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import kg.megalab.kindergarten.models.Child;
@@ -11,8 +12,9 @@ import java.time.LocalDate;
 
 @Repository
 public interface ChildRepo extends JpaRepository<Child, Long> {
-    Child findByFirstNameAndLastNameAndPatronymicAndBirthDate(@NotBlank(message = "Имя обязательно") String firstName, @NotBlank(message = "Фамилия обязательна") String lastName, String patronymic, @NotNull(message = "Дата рождения обязательна") LocalDate dateOfBirth);
+    Child findByFirstNameAndLastNameAndPatronymicAndBirthDate(String firstName, String lastName, String patronymic,LocalDate dateOfBirth);
 
+    @Transactional
     default Child findOrCreate(String firstName, String lastName, String patronymic, LocalDate dateOfBirth){
         Child child = findByFirstNameAndLastNameAndPatronymicAndBirthDate(firstName, lastName, patronymic, dateOfBirth);
            if (child != null){
