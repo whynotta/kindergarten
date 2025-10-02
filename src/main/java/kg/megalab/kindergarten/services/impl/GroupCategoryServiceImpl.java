@@ -1,5 +1,6 @@
 package kg.megalab.kindergarten.services.impl;
 
+import jakarta.transaction.Transactional;
 import kg.megalab.kindergarten.exception.ConflictException;
 import kg.megalab.kindergarten.exception.LogicException;
 import kg.megalab.kindergarten.exception.NotFoundException;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +32,7 @@ public class GroupCategoryServiceImpl implements GroupCategoryService {
         this.groupCategoryMapper = GroupCategoryMapper.INSTANCE;
     }
 
+    @Transactional
     @Override
     public ResponseEntity<GlobalResponse> createGroupCategory(GroupCategoryCreateDto groupCategoryCreateDto) {
         if (groupCategoryRepo.existsByNameIgnoreCase(groupCategoryCreateDto.getName())){
@@ -45,6 +46,7 @@ public class GroupCategoryServiceImpl implements GroupCategoryService {
         return ResponseEntity.status(201).body(response);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<GlobalResponse> updateGroupCategory(GroupCategoryDto groupCategoryDto, Long id) {
 
@@ -62,10 +64,12 @@ public class GroupCategoryServiceImpl implements GroupCategoryService {
         return ResponseEntity.status(200).body(response);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<GlobalResponse> deleteGroupCategory(Long id) {
         GroupCategory groupCategory = groupCategoryRepo.findById(id).orElseThrow(() ->
                 new NotFoundException("Категория не найдена"));
+
         groupCategoryRepo.delete(groupCategory);
 
         GlobalResponse response = GlobalResponse.success("Категория групп с id - " + id + " удалена!");

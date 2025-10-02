@@ -21,12 +21,12 @@ public class PaymentController {
     }
 
     @PostMapping
-    @Operation(description = "Создание платежа")
+    @Operation(summary = "Создание платежа")
     public ResponseEntity<GlobalResponse> createPayment(PaymentCreateDto paymentCreateDto) {
         return paymentService.createPayment(paymentCreateDto);
     }
     @GetMapping("/previos-month/{childId}")
-    @Operation(description = "Получение задолженности за прошлый месяц")
+    @Operation(summary = "Получение задолженности за прошлый месяц")
     public ResponseEntity<GlobalResponse> getPreviousMonth (@PathVariable Long childId) {
         return paymentService.getPreviousMonth(childId);
     }

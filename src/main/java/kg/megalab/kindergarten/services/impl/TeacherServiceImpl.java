@@ -1,5 +1,6 @@
 package kg.megalab.kindergarten.services.impl;
 
+import jakarta.transaction.Transactional;
 import kg.megalab.kindergarten.exception.ConflictException;
 import kg.megalab.kindergarten.exception.LogicException;
 import kg.megalab.kindergarten.exception.NotFoundException;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +31,7 @@ public class TeacherServiceImpl implements TeacherService {
         this.teacherMapper = TeacherMapper.INSTANCE;
     }
 
+    @Transactional
     @Override
     public ResponseEntity<GlobalResponse> createTeacher(TeacherCreateDto teacherCreateDto) {
         if (teacherRepo.existsByFirstNameAndLastNameAndPatronymicIgnoreCase(
@@ -47,6 +48,7 @@ public class TeacherServiceImpl implements TeacherService {
         GlobalResponse response = GlobalResponse.created(teacherDto);
         return ResponseEntity.status(201).body(response);
     }
+    @Transactional
     @Override
     public ResponseEntity<GlobalResponse> updateTeacher(TeacherDto teacherDto, Long id) {
         Teacher teacher = teacherRepo.findById(id).orElseThrow(() ->
@@ -68,6 +70,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     }
 
+    @Transactional
     @Override
     public ResponseEntity<GlobalResponse> deleteTeacher(Long id) {
         Teacher teacher = teacherRepo.findById(id).orElseThrow(() ->

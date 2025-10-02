@@ -64,6 +64,7 @@ public class GroupChildrenServiceImpl implements GroupChildrenService {
         return ResponseEntity.status(201).body(response);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<GlobalResponse> withdrawChild(Long id, WithdrawChildDto withdrawChildDto) {
         GroupChildren enrollment = groupChildrenRepo.findById(id).orElseThrow(() ->

@@ -1,5 +1,6 @@
 package kg.megalab.kindergarten.services.impl;
 
+import jakarta.transaction.Transactional;
 import kg.megalab.kindergarten.exception.ConflictException;
 import kg.megalab.kindergarten.exception.LogicException;
 import kg.megalab.kindergarten.exception.NotFoundException;
@@ -27,7 +28,7 @@ import java.util.List;
 
 @Service
 public class GroupServiceImpl implements GroupService {
-    private  final GroupRepo groupRepo;
+    private final GroupRepo groupRepo;
     private final GroupMapper groupMapper;
     private final GroupCategoryRepo groupCategoryRepo;
     private final TeacherRepo teacherRepo;
@@ -39,6 +40,7 @@ public class GroupServiceImpl implements GroupService {
         this.groupMapper = GroupMapper.INSTANCE;
     }
 
+    @Transactional
     @Override
     public ResponseEntity<GlobalResponse> createGroup(GroupCreateDto groupCreateDto) {
         if (groupRepo.existsByNameIgnoreCase(groupCreateDto.getName())) {
@@ -58,23 +60,23 @@ public class GroupServiceImpl implements GroupService {
             throw new LogicException("Учитель c id - " + groupCreateDto.getTeacherId() + " не активен!");
         }
 
-        if (teacher.getTeacherDegree().ordinal() != 0){
-            throw new LogicException("Сотрудник с id - "+ groupCreateDto.getTeacherId() + " не являеется учителем");
+        if (teacher.getTeacherDegree().ordinal() != 0) {
+            throw new LogicException("Сотрудник с id - " + groupCreateDto.getTeacherId() + " не являеется учителем");
         }
 
         Teacher nanny = teacherRepo.findById(groupCreateDto.getNannyId()).orElseThrow(() ->
                 new NotFoundException("Няня с id - " + groupCreateDto.getNannyId() + " не найдена!"));
 
         if (!nanny.isActive()) {
-            throw new LogicException("Няня с id - "+ groupCreateDto.getNannyId()+ " не активна!");
+            throw new LogicException("Няня с id - " + groupCreateDto.getNannyId() + " не активна!");
         }
 
-        if (nanny.getTeacherDegree().ordinal() != 1){
-            throw new  LogicException("Сотрудник с id - "+ groupCreateDto.getNannyId() + " не является няней!");
+        if (nanny.getTeacherDegree().ordinal() != 1) {
+            throw new LogicException("Сотрудник с id - " + groupCreateDto.getNannyId() + " не является няней!");
         }
 
         Group group = groupMapper.groupCreateDtoToGroup(groupCreateDto);
-        if(group.getPrice() == null)
+        if (group.getPrice() == null)
             group.setPrice(groupCategory.getPrice());
         group.setGroupCategory(groupCategory);
         group.setTeacher(teacher);
@@ -87,6 +89,7 @@ public class GroupServiceImpl implements GroupService {
         return ResponseEntity.status(201).body(response);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<GlobalResponse> updateGroup(GroupDto groupDto, Long id) {
         Group group = groupRepo.findById(id).orElseThrow(() ->
@@ -113,42 +116,43 @@ public class GroupServiceImpl implements GroupService {
             group.setGroupCategory(groupCategory);
         }
 
-            if (groupDto.getTeacherId() != null) {
-                Teacher teacher = teacherRepo.findById(groupDto.getTeacherId()).orElseThrow(() ->
-                        new NotFoundException("Учитель c id - " + groupDto.getTeacherId() + " не найден!"));
+        if (groupDto.getTeacherId() != null) {
+            Teacher teacher = teacherRepo.findById(groupDto.getTeacherId()).orElseThrow(() ->
+                    new NotFoundException("Учитель c id - " + groupDto.getTeacherId() + " не найден!"));
 
-                if (!teacher.isActive()) {
-                    throw new LogicException("Учитель c id - " + groupDto.getTeacherId() + " не активен!");
-                }
-
-                if (teacher.getTeacherDegree().ordinal() != 0) {
-                    throw new LogicException("Сотрудник с id - " + groupDto.getTeacherId() + " не являеется учителем");
-                }
-
-                group.setTeacher(teacher);
+            if (!teacher.isActive()) {
+                throw new LogicException("Учитель c id - " + groupDto.getTeacherId() + " не активен!");
             }
 
-                if (groupDto.getNannyId() != null) {
-                    Teacher nanny = teacherRepo.findById(groupDto.getNannyId()).orElseThrow(() ->
-                            new NotFoundException("Няня с id - " + groupDto.getNannyId() + " не найдена!"));
-                    if (!nanny.isActive()) {
-                        throw new LogicException("Няня с id - " + groupDto.getNannyId() + " не активна!");
-                    }
-
-                    if (nanny.getTeacherDegree().ordinal() != 1) {
-                        throw new LogicException("Сотрудник с id - " + groupDto.getNannyId() + " не является няней!");
-                    }
-
-                    group.setNanny(nanny);
-                }
-
-                Group updatedGroup = groupRepo.save(group);
-                GroupDto updatedGroupDto = groupMapper.groupToGroupDto(updatedGroup);
-
-                GlobalResponse response = GlobalResponse.success(updatedGroupDto);
-                return ResponseEntity.status(200).body(response);
+            if (teacher.getTeacherDegree().ordinal() != 0) {
+                throw new LogicException("Сотрудник с id - " + groupDto.getTeacherId() + " не являеется учителем");
             }
 
+            group.setTeacher(teacher);
+        }
+
+        if (groupDto.getNannyId() != null) {
+            Teacher nanny = teacherRepo.findById(groupDto.getNannyId()).orElseThrow(() ->
+                    new NotFoundException("Няня с id - " + groupDto.getNannyId() + " не найдена!"));
+            if (!nanny.isActive()) {
+                throw new LogicException("Няня с id - " + groupDto.getNannyId() + " не активна!");
+            }
+
+            if (nanny.getTeacherDegree().ordinal() != 1) {
+                throw new LogicException("Сотрудник с id - " + groupDto.getNannyId() + " не является няней!");
+            }
+
+            group.setNanny(nanny);
+        }
+
+        Group updatedGroup = groupRepo.save(group);
+        GroupDto updatedGroupDto = groupMapper.groupToGroupDto(updatedGroup);
+
+        GlobalResponse response = GlobalResponse.success(updatedGroupDto);
+        return ResponseEntity.status(200).body(response);
+    }
+
+    @Transactional
     @Override
     public ResponseEntity<GlobalResponse> deleteGroup(Long id) {
         Group group = groupRepo.findById(id).orElseThrow(() ->
@@ -159,6 +163,7 @@ public class GroupServiceImpl implements GroupService {
         GlobalResponse response = GlobalResponse.success(group);
         return ResponseEntity.status(200).body(response);
     }
+
 
     @Override
     public ResponseEntity<GlobalResponse> findGroupById(Long id) {

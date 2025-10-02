@@ -16,14 +16,10 @@ import kg.megalab.kindergarten.repositories.GroupChildrenRepo;
 import kg.megalab.kindergarten.repositories.PaymentRepo;
 import kg.megalab.kindergarten.response.GlobalResponse;
 import kg.megalab.kindergarten.services.PaymentService;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.TextStyle;
-import java.util.Locale;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
