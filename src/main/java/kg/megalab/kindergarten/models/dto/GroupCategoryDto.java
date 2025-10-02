@@ -15,5 +15,5 @@ public class GroupCategoryDto {
     Long id;
     String name;
     boolean active;
-    double price;
+    Integer price;
 }

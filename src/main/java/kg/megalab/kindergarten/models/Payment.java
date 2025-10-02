@@ -20,7 +20,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Column(nullable = false)
-    double amount;
+    Integer amount;
     @Column(nullable = false,name = "payment_date")
     LocalDate paymentDate;
     @ManyToOne

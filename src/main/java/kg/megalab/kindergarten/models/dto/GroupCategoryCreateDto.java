@@ -20,6 +20,6 @@ public class GroupCategoryCreateDto {
     boolean active;
     @NotNull(message = "Цена обязательна!")
     @Positive(message = "Цена должна быть больше нуля!")
-    double price;
+    Integer price;
 
 }

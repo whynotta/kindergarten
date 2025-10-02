@@ -25,7 +25,7 @@ public class GroupChildren {
     LocalDate startDate;
     @Column(name = "end_date")
     LocalDate endDate;
-    double price;
+    Integer price;
     @ManyToOne
     @JoinColumn(name = "children_id",nullable = false)
     Child child;

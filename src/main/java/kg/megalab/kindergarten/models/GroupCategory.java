@@ -26,7 +26,7 @@ public class GroupCategory {
     @Column(nullable = false)
     boolean active;
     @Column(nullable = false,name = "price")
-    double price;
+    Integer price;
     @JsonIgnore
     @OneToMany(mappedBy = "groupCategory")
     List<Group> groups = new ArrayList<>();

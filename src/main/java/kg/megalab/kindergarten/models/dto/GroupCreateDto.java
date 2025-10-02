@@ -23,7 +23,7 @@ public class GroupCreateDto {
     Integer maxChildrenCount;
     @Positive(message = "Цена не может быть меньше нуля!")
     @NotNull(message = "Цена обязательна!")
-    Double price;
+    Integer price;
     @NotNull(message = "Няня обязательнна!")
     Long nannyId;
     @NotNull(message = "Категория групп обязательна!")

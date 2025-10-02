@@ -6,8 +6,12 @@ import kg.megalab.kindergarten.response.GlobalResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDate;
+
 public interface GroupChildrenRepo extends JpaRepository<GroupChildren,Long> {
     GroupChildren findByChildIdAndEndDateIsNull(Long id);
 
     long countByGroupIdAndEndDateIsNull(Long id);
+
+    GroupChildren findActiveEnrollmentByChildId(Long childId);
 }

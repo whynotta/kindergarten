@@ -17,7 +17,7 @@ public class GroupDto {
     Long id;
     String name;
     Integer maxChildrenCount;
-    Double price;
+    Integer price;
     Long nannyId;
     Long groupCategoryId;
     Long teacherId;
