@@ -43,6 +43,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         if(paymentCreateDto.getPaymentDate().isAfter(LocalDate.now()))
             throw new LogicException("Время оплаты не может быть в будущем");
+        // Нельзя принимать оплату за отчисленного ребенка
         if(groupChildren.getEndDate() != null)
             throw new ConflictException("Нельзя добавить платеж для отчисленного ребенка");
 
@@ -64,11 +65,13 @@ public class PaymentServiceImpl implements PaymentService {
         Child child = childRepo.findById(childId).orElseThrow(() ->
                 new NotFoundException("Ребенок с айди -" + childId + "не найден!"));
 
+        // Определяем прошлый месяц
         LocalDate today = LocalDate.now();
         LocalDate firstDayOfPreviousMonth = today.minusMonths(1).withDayOfMonth(1);
         LocalDate lastDayOfPreviousMonth = today.minusMonths(1).withDayOfMonth(today.
                 minusMonths(1).lengthOfMonth());
 
+        // Проверка на зачисление в прошлом месяце
         GroupChildren enrollment = groupChildrenRepo.findByChildIdAndPeriodOverlap(childId,
                 firstDayOfPreviousMonth,lastDayOfPreviousMonth);
          if (enrollment == null)

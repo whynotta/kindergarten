@@ -12,6 +12,7 @@ import kg.megalab.kindergarten.models.dto.GroupCreateDto;
 import kg.megalab.kindergarten.models.dto.GroupDto;
 import kg.megalab.kindergarten.models.dto.PagedResponse;
 import kg.megalab.kindergarten.repositories.GroupCategoryRepo;
+import kg.megalab.kindergarten.repositories.GroupChildrenRepo;
 import kg.megalab.kindergarten.repositories.GroupRepo;
 import kg.megalab.kindergarten.repositories.TeacherRepo;
 import kg.megalab.kindergarten.response.GlobalResponse;
@@ -32,11 +33,13 @@ public class GroupServiceImpl implements GroupService {
     private final GroupMapper groupMapper;
     private final GroupCategoryRepo groupCategoryRepo;
     private final TeacherRepo teacherRepo;
+    private final GroupChildrenRepo groupChildrenRepo;
 
-    public GroupServiceImpl(GroupRepo groupRepo, GroupCategoryRepo groupCategoryRepo, TeacherRepo teacherRepo) {
+    public GroupServiceImpl(GroupRepo groupRepo, GroupCategoryRepo groupCategoryRepo, TeacherRepo teacherRepo, GroupChildrenRepo groupChildrenRepo) {
         this.groupRepo = groupRepo;
         this.groupCategoryRepo = groupCategoryRepo;
         this.teacherRepo = teacherRepo;
+        this.groupChildrenRepo = groupChildrenRepo;
         this.groupMapper = GroupMapper.INSTANCE;
     }
 
@@ -75,6 +78,7 @@ public class GroupServiceImpl implements GroupService {
             throw new LogicException("Сотрудник с id - " + groupCreateDto.getNannyId() + " не является няней!");
         }
 
+        // Создание группы с изменением цены (если она указана)
         Group group = groupMapper.groupCreateDtoToGroup(groupCreateDto);
         if (group.getPrice() == null)
             group.setPrice(groupCategory.getPrice());
@@ -95,6 +99,7 @@ public class GroupServiceImpl implements GroupService {
         Group group = groupRepo.findById(id).orElseThrow(() ->
                 new NotFoundException("Группа с id - " + id + "не найдена"));
 
+        // Проверка на конфликт имени только если оно изменяется
         if (groupDto.getName() != null
                 && !groupDto.getName().equalsIgnoreCase(group.getName())
                 && groupRepo.existsByNameIgnoreCaseAndIdNot(groupDto.getName(), group.getId())) {
@@ -106,6 +111,7 @@ public class GroupServiceImpl implements GroupService {
         group.setMaxChildrenCount(groupDto.getMaxChildrenCount());
         group.setPrice(groupDto.getPrice());
 
+        // Обновление категории групп если она указана
         if (groupDto.getGroupCategoryId() != null) {
             GroupCategory groupCategory = groupCategoryRepo.findById(groupDto.getGroupCategoryId()).orElseThrow(() ->
                     new NotFoundException("Категория групп с id - " + groupDto.getGroupCategoryId() + " не найдена"));
@@ -116,6 +122,7 @@ public class GroupServiceImpl implements GroupService {
             group.setGroupCategory(groupCategory);
         }
 
+        // Обновление учителя если он указан
         if (groupDto.getTeacherId() != null) {
             Teacher teacher = teacherRepo.findById(groupDto.getTeacherId()).orElseThrow(() ->
                     new NotFoundException("Учитель c id - " + groupDto.getTeacherId() + " не найден!"));
@@ -131,6 +138,7 @@ public class GroupServiceImpl implements GroupService {
             group.setTeacher(teacher);
         }
 
+        // Обновление няни если она указана
         if (groupDto.getNannyId() != null) {
             Teacher nanny = teacherRepo.findById(groupDto.getNannyId()).orElseThrow(() ->
                     new NotFoundException("Няня с id - " + groupDto.getNannyId() + " не найдена!"));
@@ -144,7 +152,6 @@ public class GroupServiceImpl implements GroupService {
 
             group.setNanny(nanny);
         }
-
         Group updatedGroup = groupRepo.save(group);
         GroupDto updatedGroupDto = groupMapper.groupToGroupDto(updatedGroup);
 
@@ -157,6 +164,12 @@ public class GroupServiceImpl implements GroupService {
     public ResponseEntity<GlobalResponse> deleteGroup(Long id) {
         Group group = groupRepo.findById(id).orElseThrow(() ->
                 new NotFoundException("Группа с id - " + id + " не найдена!"));
+
+        // Проверка на наличие активных детей в группе
+        long activeChildrenCount = groupChildrenRepo.countByGroupIdAndEndDateIsNull(id);
+        if (activeChildrenCount > 0) {
+            throw new ConflictException("Нельзя удалить группу с активными детьми");
+        }
 
         groupRepo.delete(group);
 

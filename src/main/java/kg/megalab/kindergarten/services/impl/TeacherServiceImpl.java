@@ -34,6 +34,7 @@ public class TeacherServiceImpl implements TeacherService {
     @Transactional
     @Override
     public ResponseEntity<GlobalResponse> createTeacher(TeacherCreateDto teacherCreateDto) {
+        // Проверка на наличие учителя с таким же ФИО
         if (teacherRepo.existsByFirstNameAndLastNameAndPatronymicIgnoreCase(
                 teacherCreateDto.getFirstName(),
                 teacherCreateDto.getLastName(),
@@ -53,6 +54,8 @@ public class TeacherServiceImpl implements TeacherService {
     public ResponseEntity<GlobalResponse> updateTeacher(TeacherDto teacherDto, Long id) {
         Teacher teacher = teacherRepo.findById(id).orElseThrow(() ->
                         new NotFoundException("Учитель c id - " + id +" не найден"));
+
+        // Проверка уникальности ФИО исключая текущего учителя
         if (teacherRepo.existsByFirstNameAndLastNameAndPatronymicIgnoreCaseAndIdNot(
                 teacherDto.getFirstName(),
                 teacherDto.getLastName(),
@@ -75,6 +78,8 @@ public class TeacherServiceImpl implements TeacherService {
     public ResponseEntity<GlobalResponse> deleteTeacher(Long id) {
         Teacher teacher = teacherRepo.findById(id).orElseThrow(() ->
                 new NotFoundException("Учитель с id - "+ id + " не найден!"));
+
+        // Проверка на привязанность учителя к другим группам
         if (!teacher.getTeacherGroups().isEmpty() || !teacher.getNannyGroups().isEmpty()){
             throw new LogicException("Нельзя удалить учителя с активными группами!");
         }

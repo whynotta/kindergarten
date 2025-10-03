@@ -10,6 +10,7 @@ import kg.megalab.kindergarten.models.dto.GroupCategoryCreateDto;
 import kg.megalab.kindergarten.models.dto.GroupCategoryDto;
 import kg.megalab.kindergarten.models.dto.PagedResponse;
 import kg.megalab.kindergarten.repositories.GroupCategoryRepo;
+import kg.megalab.kindergarten.repositories.GroupRepo;
 import kg.megalab.kindergarten.response.GlobalResponse;
 import kg.megalab.kindergarten.services.GroupCategoryService;
 import org.springframework.data.domain.Page;
@@ -26,15 +27,18 @@ import java.util.List;
 public class GroupCategoryServiceImpl implements GroupCategoryService {
     private final GroupCategoryRepo groupCategoryRepo;
     private final GroupCategoryMapper groupCategoryMapper;
+    private final GroupRepo groupRepo;
 
-    public GroupCategoryServiceImpl(GroupCategoryRepo groupCategoryRepo) {
+    public GroupCategoryServiceImpl(GroupCategoryRepo groupCategoryRepo, GroupRepo groupRepo) {
         this.groupCategoryRepo = groupCategoryRepo;
+        this.groupRepo = groupRepo;
         this.groupCategoryMapper = GroupCategoryMapper.INSTANCE;
     }
 
     @Transactional
     @Override
     public ResponseEntity<GlobalResponse> createGroupCategory(GroupCategoryCreateDto groupCategoryCreateDto) {
+        // Проверка на уникальность имени группы игнорируя регистр
         if (groupCategoryRepo.existsByNameIgnoreCase(groupCategoryCreateDto.getName())){
             throw new ConflictException("Категория с таким именем уже существует!");
         }
@@ -52,6 +56,8 @@ public class GroupCategoryServiceImpl implements GroupCategoryService {
 
         GroupCategory groupCategory = groupCategoryRepo.findById(id).
                 orElseThrow(() -> new NotFoundException("Категория не найдена!"));
+
+        // Проверяем конфликт имен только если текущее было измененно
         if (!groupCategory.getName().equalsIgnoreCase(groupCategoryDto.getName()) &&
                 groupCategoryRepo.existsByNameIgnoreCase(groupCategoryDto.getName())){
             throw new ConflictException("Категория с таким именем уже существует");
@@ -69,6 +75,9 @@ public class GroupCategoryServiceImpl implements GroupCategoryService {
     public ResponseEntity<GlobalResponse> deleteGroupCategory(Long id) {
         GroupCategory groupCategory = groupCategoryRepo.findById(id).orElseThrow(() ->
                 new NotFoundException("Категория не найдена"));
+        // Проверка на использование категории в какой либо группе
+        if(groupRepo.existsByGroupCategory(groupCategory))
+            throw new ConflictException("Категория используется в группе");
 
         groupCategoryRepo.delete(groupCategory);
 

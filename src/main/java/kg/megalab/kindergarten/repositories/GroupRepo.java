@@ -2,6 +2,7 @@ package kg.megalab.kindergarten.repositories;
 
 import jakarta.validation.constraints.NotBlank;
 import kg.megalab.kindergarten.models.Group;
+import kg.megalab.kindergarten.models.GroupCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,6 @@ public interface GroupRepo extends JpaRepository<Group, Long> {
     boolean existsByNameIgnoreCaseAndIdNot(String name, Long id);
 
     Page<Group> findAllByOrderByGroupCategoryName(Pageable pageable);
+
+    boolean existsByGroupCategory(GroupCategory groupCategory);
 }
