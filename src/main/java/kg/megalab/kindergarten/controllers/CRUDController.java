@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public interface CRUDController <CreateDto,Dto> {
-    ResponseEntity<GlobalResponse> create(@Valid @RequestBody CreateDto createDto);
+    ResponseEntity<GlobalResponse> create( @RequestBody CreateDto createDto);
     ResponseEntity<GlobalResponse> update(@Valid @RequestBody Dto dto,@PathVariable Long id);
     ResponseEntity<GlobalResponse> delete(@Valid @PathVariable Long id);
     ResponseEntity<GlobalResponse> findById(@Valid @PathVariable Long id);

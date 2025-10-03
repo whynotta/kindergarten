@@ -1,5 +1,6 @@
 package kg.megalab.kindergarten.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,11 +28,14 @@ public class GroupChildren {
     LocalDate endDate;
     Integer price;
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "children_id",nullable = false)
     Child child;
     @ManyToOne
     @JoinColumn(name = "group_id",nullable = false)
+    @JsonIgnore
     Group group;
     @OneToMany(mappedBy = "groupChildren")
+
     List<Payment> payments = new ArrayList<>();
 }
